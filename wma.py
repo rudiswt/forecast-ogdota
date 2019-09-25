@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 
-df = pd.read_csv(filepath_or_buffer='matches.csv',usecols=['match_id','start_time','league_name','opposing_team_name','radiant_win', 'radiant','duration'])
+df = pd.read_csv(filepath_or_buffer='matches.csv',usecols=['match_id','start_time','league_name','opposing_team_name','radiant_win', 'radiant','duration'], engine='python')
 df['start_time'] = pd.to_datetime(df['start_time'],unit='s')
 df = df[['match_id','start_time','league_name','opposing_team_name','radiant_win', 'radiant','duration']]
 df = df.sort_values(by=['opposing_team_name','start_time'])
@@ -52,8 +52,9 @@ def filter3Bulan(pp,arr):
     if pp<2:
         rumus = np.nan
     else:
-        kurang = pp - 3
-        slicing = slice(kurang, pp)
+        print(pp)
+        kurang = pp+1 - 3
+        slicing = slice(kurang, pp+1)
         slicearr = arr[slicing]
         # print(slicearr)
         for k, p in enumerate(slicearr):
