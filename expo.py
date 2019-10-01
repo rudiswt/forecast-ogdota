@@ -42,7 +42,7 @@ for a in range(len(df.index)-1, -1, -1):
     changeValueWin(df['radiant'][a], a)
 
 # for b in range(len(df.index)-1, -1, -1):
-newdf = df.loc[df['opposing_team_name'].str.contains("Alliance")== True]
+newdf = df.loc[df['opposing_team_name'].str.contains("pire")== True]
 newdf['Periode'] = np.arange(len(newdf))
 newdf = newdf.set_index('Periode')
 newdf.index = newdf.index+1
