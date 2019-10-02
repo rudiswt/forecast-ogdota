@@ -59,8 +59,8 @@ results["Additive Dam"]   = [fit3.params[p] for p in params] + [fit3.sse]
 results["Multiplica Dam"] = [fit4.params[p] for p in params] + [fit4.sse]
 
 ax = aust.plot(figsize=(10,6), marker='o', color='black', title="Forecasts from Holt-Winters' multiplicative method" )
-ax.set_ylabel("International visitor night in Australia (millions)")
-ax.set_xlabel("Year")
+ax.set_ylabel("Winrate")
+ax.set_xlabel("Periode")
 aust.rename('Duration').plot(ax=ax, style='--', color='red', legend=True)
 fit2.fittedvalues.rename('Holt-Winters < Total Periode').plot(ax=ax, style='--', color='green', legend=True)
 fit2.forecast(4).rename('Holt-Winters > Total Periode').plot(ax=ax, style='--', marker='o', color='green', legend=True)
@@ -68,9 +68,41 @@ fit2.forecast(4).rename('Holt-Winters > Total Periode').plot(ax=ax, style='--', 
 # fit1.forecast(8).rename('Holt-Winters (add-add-seasonal)').plot(ax=ax, style='--', marker='o', color='red', legend=True)
 
 dfs = pd.DataFrame(np.c_[aust, fit2.level, fit2.slope, fit2.season, fit2.fittedvalues],
-                  columns=[r'Duration',r'Level',r'Trend',r'Seasonal',r'Forecast Duration'],index=aust.index)
+                  columns=[r'Duration',r'Level Dur',r'Trend Dur',r'Seasonal Dur',r'Forecast Duration'],index=aust.index)
 hh = dfs.append(fit2.forecast(4).rename(r'Forecast Duration').to_frame(), sort=True)
 
+x=0
+for c in range(len(newdf.index)):
+    x += int(newdf.iloc[c]['radiant_win'] == True)
+    c += 1
+    winrate = hitungWinrate(x,c)
+    newdf.loc[newdf.index[c-1],'Winrate'] = winrate*100
+
+austt = newdf['Winrate']
+fit5 = ExponentialSmoothing(austt, seasonal_periods=4, trend='add', seasonal='add').fit(use_boxcox=True)
+fit6 = ExponentialSmoothing(austt, seasonal_periods=4, trend='add', seasonal='mul').fit(use_boxcox=True)
+fit7 = ExponentialSmoothing(austt, seasonal_periods=4, trend='add', seasonal='add', damped=True).fit(use_boxcox=True)
+fit8 = ExponentialSmoothing(austt, seasonal_periods=4, trend='add', seasonal='mul', damped=True).fit(use_boxcox=True)
+results=pd.DataFrame(index=[r"$\alpha$",r"$\beta$",r"$\phi$",r"$\gamma$",r"$l_0$","$b_0$","SSE"])
+params = ['smoothing_level', 'smoothing_slope', 'damping_slope', 'smoothing_seasonal', 'initial_level', 'initial_slope']
+results["Additive"]       = [fit5.params[p] for p in params] + [fit1.sse]
+results["Multiplicative"] = [fit6.params[p] for p in params] + [fit2.sse]
+results["Additive Dam"]   = [fit7.params[p] for p in params] + [fit3.sse]
+results["Multiplica Dam"] = [fit8.params[p] for p in params] + [fit4.sse]
+
+ax = austt.plot(figsize=(10,6), marker='o', color='black', title="Forecasts from Holt-Winters' multiplicative method" )
+ax.set_ylabel("Winrate")
+ax.set_xlabel("Periode")
+aust.rename('Winrate').plot(ax=ax, style='--', color='red', legend=True)
+fit6.fittedvalues.rename('Holt-Winters < Total Periode').plot(ax=ax, style='--', color='green', legend=True)
+fit6.forecast(4).rename('Holt-Winters > Total Periode').plot(ax=ax, style='--', marker='o', color='green', legend=True)
+
+hh['Winrate'] = austt
+hh['Level Wr'] = fit6.level
+hh['Trend Wr'] = fit6.slope
+hh['Seasonal Wr']= fit6.season
+hh['Forecast Wr'] = fit6.fittedvalues
+hh = hh.append(fit6.forecast(4).rename(r'Forecast Wr').to_frame(), sort=True)
 # print(aust)
 print('-------------------------------------------------')
 
