@@ -61,22 +61,22 @@ results["Multiplica Dam"] = [fit4.params[p] for p in params] + [fit4.sse]
 ax = aust.plot(figsize=(10,6), marker='o', color='black', title="Forecasts from Holt-Winters' multiplicative method" )
 ax.set_ylabel("International visitor night in Australia (millions)")
 ax.set_xlabel("Year")
-aust.plot(ax=ax, style='--', color='red')
-fit2.fittedvalues.plot(ax=ax, style='--', color='green')
+aust.rename('Duration').plot(ax=ax, style='--', color='red', legend=True)
+fit2.fittedvalues.rename('Holt-Winters < Total Periode').plot(ax=ax, style='--', color='green', legend=True)
+fit2.forecast(4).rename('Holt-Winters > Total Periode').plot(ax=ax, style='--', marker='o', color='green', legend=True)
 
-fit1.forecast(8).rename('Holt-Winters (add-add-seasonal)').plot(ax=ax, style='--', marker='o', color='red', legend=True)
-fit2.forecast(8).rename('Holt-Winters (add-mul-seasonal)').plot(ax=ax, style='--', marker='o', color='green', legend=True)
+# fit1.forecast(8).rename('Holt-Winters (add-add-seasonal)').plot(ax=ax, style='--', marker='o', color='red', legend=True)
 
 dfs = pd.DataFrame(np.c_[aust, fit2.level, fit2.slope, fit2.season, fit2.fittedvalues],
                   columns=[r'Duration',r'Level',r'Trend',r'Seasonal',r'Forecast Duration'],index=aust.index)
-dfs.append(fit2.forecast(8).rename(r'$\hat{y}_t$').to_frame(), sort=True)
+hh = dfs.append(fit2.forecast(4).rename(r'Forecast Duration').to_frame(), sort=True)
 
-print(aust)
+# print(aust)
 print('-------------------------------------------------')
 
 print(results)
 print('-------------------------------------------------')
 
-print(dfs)
+print(hh)
 print('-------------------------------------------------')
 plt.show()

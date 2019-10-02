@@ -85,9 +85,9 @@ for c in range(len(newdf.index)):
 
 saledata = newdf['Winrate']
 fit2 = Holt(saledata).fit(smoothing_level=0.8, smoothing_slope=0.2, optimized=False)
-fcast2 = fit2.forecast(12).rename("Holt's linear trend")
-newdf['duration'].plot(style='--', color='red', legend=True)
-fit2.fittedvalues.plot(style='--', color='green', legend=True)
+fcast2 = fit2.forecast(4).rename("Holt's linear trend")
+# newdf['duration'].plot(style='--', color='red', legend=True)
+# fit2.fittedvalues.plot(style='--', color='green', legend=True)
 
 newdf['Forecast Winrate'] = fit2.fittedvalues
 newdf["Error Winrate"] = newdf["Winrate"] - newdf["Forecast Winrate"]
